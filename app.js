@@ -14,7 +14,7 @@ const TR = {
     brandKicker: "PINK GELATIN", brandName: "Trick",
     nav: { home: "Início", program: "Programa", recipes: "Receitas", tracker: "Suivi", bonus: "Bônus" },
     greet: { morning: "Bom dia", afternoon: "Boa tarde", evening: "Boa noite" },
-    act: { back: "Voltar", material: "Material desta aula", next: "Próxima aula", videoSoon: "Vídeo em breve", watchYoutube: "Assistir no YouTube" },
+    act: { back: "Voltar", material: "Material desta aula", next: "Próxima aula", videoSoon: "Vídeo em breve" },
     home: {
       welcomeSub: "Continue de onde parou, revise suas receitas e mantenha o registro da sua rotina.",
       journey: "Sua jornada", journeyTitle: "21 dias para instalar sua rotina",
@@ -68,7 +68,7 @@ const TR = {
     brandKicker: "PINK GELATIN", brandName: "Trick",
     nav: { home: "Accueil", program: "Programme", recipes: "Recettes", tracker: "Suivi", bonus: "Bonus" },
     greet: { morning: "Bonjour", afternoon: "Bon après-midi", evening: "Bonsoir" },
-    act: { back: "Retour", material: "Support de ce module", next: "Module suivant", videoSoon: "Vidéo à venir", watchYoutube: "Voir sur YouTube" },
+    act: { back: "Retour", material: "Support de ce module", next: "Module suivant", videoSoon: "Vidéo à venir" },
     home: {
       welcomeSub: "Continuez où vous en étiez, retrouvez vos recettes et gardez une trace de votre routine.",
       journey: "Votre parcours", journeyTitle: "21 jours pour installer votre routine",
@@ -122,7 +122,7 @@ const TR = {
     brandKicker: "PINK GELATIN", brandName: "Trick",
     nav: { home: "Home", program: "Program", recipes: "Recipes", tracker: "Tracking", bonus: "Bonus" },
     greet: { morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening" },
-    act: { back: "Back", material: "Lesson material", next: "Next lesson", videoSoon: "Video coming soon", watchYoutube: "Watch on YouTube" },
+    act: { back: "Back", material: "Lesson material", next: "Next lesson", videoSoon: "Video coming soon" },
     home: {
       welcomeSub: "Pick up where you left off, revisit your recipes, and keep your routine on track.",
       journey: "Your journey", journeyTitle: "21 days to build your routine",
@@ -551,8 +551,7 @@ function renderLessonDetail(lessonId) {
   const nextMeta = LESSONS[idx + 1];
 
   const videoBlock = meta.videoId
-    ? `<div class="video-box"><iframe src="https://www.youtube-nocookie.com/embed/${meta.videoId}?rel=0" title="${info.title}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-       <a class="video-external-link" href="https://www.youtube.com/watch?v=${meta.videoId}" target="_blank" rel="noopener">${t.act.watchYoutube} ${ICON_CHEVRON}</a>`
+    ? `<div class="video-box"><iframe src="https://www.youtube-nocookie.com/embed/${meta.videoId}?rel=0" title="${info.title}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
     : `<div class="video-box"><div class="video-placeholder"><span class="play-dot">${ICON_PLAY_LG}</span><span>${t.act.videoSoon}</span></div></div>`;
 
   const nextBlock = nextMeta ? `
