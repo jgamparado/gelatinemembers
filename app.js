@@ -2,11 +2,17 @@ const LESSONS = [
   { id: "bienvenue", mod: 0, dur: "08 min", typeKey: "module", videoId: "eOOmP6IUtOk" },
   { id: "preparation", mod: 0, dur: "12 min", typeKey: "guide", videoId: "pGniF4tZ8qE" },
   { id: "protocole", mod: 0, dur: "18 min", typeKey: "guide", videoId: "eRgms33yuoA" },
-  { id: "recettes", mod: 1, dur: "10 min", typeKey: "sheet", videoId: "dE_rFwuPUEY" },
+  { id: "recettes", mod: 1, dur: "06 min", typeKey: "sheet", videoId: "S6FyPD70e6w" },
   { id: "hydratation", mod: 1, dur: "09 min", typeKey: "guide", videoId: null },
   { id: "suivi", mod: 1, dur: "14 min", typeKey: "journal", videoId: "VgsQDZTk8rM" },
   { id: "mindset", mod: 2, dur: "12 min", typeKey: "bonus", videoId: null },
   { id: "apres", mod: 2, dur: "11 min", typeKey: "bonus", videoId: "_OF1jlD9LAw" }
+];
+
+const RECIPE_PHOTOS = [
+  "https://images.unsplash.com/photo-1607813507428-ea507f5949b9?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1452968011964-24f8831c43c3?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1598431388094-324d32b317fc?auto=format&fit=crop&w=800&q=80"
 ];
 
 const TR = {
@@ -187,6 +193,7 @@ const TOTAL_DAYS = 21;
 const defaultState = {
   route: "home",
   activeLessonId: null,
+  activeRecipeIndex: null,
   lang: "fr",
   theme: "light",
   trackerView: "calendar",
@@ -248,6 +255,7 @@ function L() { return TR[state.lang] || TR.fr; }
 function go(route) {
   state.route = route;
   state.activeLessonId = null;
+  state.activeRecipeIndex = null;
   state.settingsOpen = false;
   render();
   els.appScroll.scrollTop = 0;
@@ -256,6 +264,13 @@ function go(route) {
 function openLesson(id) {
   state.route = "program";
   state.activeLessonId = id;
+  render();
+  els.appScroll.scrollTop = 0;
+}
+
+function openRecipe(index) {
+  state.route = "recipes";
+  state.activeRecipeIndex = index;
   render();
   els.appScroll.scrollTop = 0;
 }
@@ -485,14 +500,14 @@ function renderHome() {
         </div>
       </div>
 
-      <div class="featured-recipe">
-        <div class="recipe-photo">${t.recipesEyebrow}<br/>· ${recipe.title} ·</div>
+      <button class="featured-recipe" type="button" data-action="open-recipe" data-index="0">
+        <img class="recipe-photo-img" src="${RECIPE_PHOTOS[0]}" alt="${recipe.title}" loading="lazy">
         <div class="recipe-body">
           <span class="recipe-badge">${recipe.label}</span>
           <h4>${recipe.title}</h4>
           <p>${recipe.desc}</p>
         </div>
-      </div>
+      </button>
     </div>
   `;
 }
@@ -589,17 +604,36 @@ function renderRecipes() {
         <p class="eyebrow">${t.recipesEyebrow}</p>
         <h2 class="serif-h2">${t.recipesTitle}</h2>
       </div>
-      ${t.recipes.map((rec) => `
-        <div class="featured-recipe">
-          <div class="recipe-photo tall">${rec.label}</div>
+      ${t.recipes.map((rec, i) => `
+        <button class="featured-recipe" type="button" data-action="open-recipe" data-index="${i}">
+          <img class="recipe-photo-img tall" src="${RECIPE_PHOTOS[i]}" alt="${rec.title}" loading="lazy">
           <div class="recipe-body">
             <span class="recipe-badge">${rec.label}</span>
             <h3>${rec.title}</h3>
-            <ul>${rec.items.map((it) => `<li>${it}</li>`).join("")}</ul>
-            <p class="recipe-desc">${rec.desc}</p>
+            <p>${rec.desc}</p>
           </div>
-        </div>
+        </button>
       `).join("")}
+    </div>
+  `;
+}
+
+function renderRecipeDetail(index) {
+  const t = L();
+  const rec = t.recipes[index];
+  return `
+    <div class="view">
+      <button class="back-btn" type="button" data-action="close-recipe">${ICON_BACK}${t.act.back}</button>
+      <div class="recipe-hero"><img class="recipe-photo-img detail" src="${RECIPE_PHOTOS[index]}" alt="${rec.title}" loading="lazy"></div>
+      <div>
+        <span class="recipe-badge">${rec.label}</span>
+        <h2 class="lesson-detail-title">${rec.title}</h2>
+        <p class="lesson-detail-desc">${rec.desc}</p>
+      </div>
+      <div class="card">
+        <h4 style="margin:0 0 10px;font-size:14.5px;color:var(--ink);">${t.recipesTitle}</h4>
+        <ul class="ingredient-list">${rec.items.map((it) => `<li>${it}</li>`).join("")}</ul>
+      </div>
     </div>
   `;
 }
@@ -721,6 +755,7 @@ function renderView() {
   if (state.route === "home") html = renderHome();
   else if (state.route === "program" && state.activeLessonId) html = renderLessonDetail(state.activeLessonId);
   else if (state.route === "program") html = renderProgramList();
+  else if (state.route === "recipes" && state.activeRecipeIndex != null) html = renderRecipeDetail(state.activeRecipeIndex);
   else if (state.route === "recipes") html = renderRecipes();
   else if (state.route === "tracker") html = renderTracker();
   else if (state.route === "bonus") html = renderBonus();
@@ -756,6 +791,8 @@ els.appScroll.addEventListener("click", (event) => {
   else if (action === "go") go(target.dataset.route);
   else if (action === "open-lesson") openLesson(target.dataset.id);
   else if (action === "close-lesson") { state.activeLessonId = null; render(); els.appScroll.scrollTop = 0; }
+  else if (action === "open-recipe") openRecipe(Number(target.dataset.index));
+  else if (action === "close-recipe") { state.activeRecipeIndex = null; render(); els.appScroll.scrollTop = 0; }
   else if (action === "toggle-lesson") toggleLesson(target.dataset.id);
   else if (action === "toggle-daily") toggleDaily(target.dataset.key);
   else if (action === "reset-daily") resetDaily();
